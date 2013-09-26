@@ -1,1 +1,4 @@
-/MovieSearchEngine/nbproject/private/
+.gitignore
+/MovieSearchEngine/nbproject/
+/MovieSearchEngine/build.xml
+/MovieSearchEngine/manifest.mf
