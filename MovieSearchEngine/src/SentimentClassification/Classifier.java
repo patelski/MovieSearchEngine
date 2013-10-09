@@ -28,12 +28,15 @@ public class Classifier {
     private Instances testData;
     ArrayList<String> classValues = new ArrayList();
 
-    //create an instance from two strings
-    public Instance createInstance(String text, String class1) {
-        double[] instanceValue = new double[2];
-        instanceValue[0] = trainingData.attribute(0).addStringValue(text);
-        instanceValue[1] = trainingData.attribute(1).addStringValue(class1);
-        Instance instance = new DenseInstance(1.0, instanceValue);
+    //create an instance from a string.
+    public Instance makeInstance(String body, Instances data) {
+        Instance instance = new DenseInstance(2);
+        // Set value for type attribute
+        Attribute typeAtt = trainingData.attribute("Review");
+        instance.setValue(typeAtt, typeAtt.addStringValue(body));
+        // Give instance acces to attribute information from the dataset
+        instance.setDataset(trainingData);
+
         return instance;
     }
 
@@ -50,15 +53,15 @@ public class Classifier {
         trainingData = new Instances("Instances", attributes, 10);
         trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
-        //add trraining data
+        //add training data
         try {
             for (int i = 1; i <= 500; i++) {
                 String review = new Scanner(new File("sentimentTrainingData/pos/pos (" + i + ").txt")).useDelimiter("\\A").next();
-                trainingData.add(createInstance(review,"positive"));
+                addInstance("positive", review, trainingData);
             }
             for (int i = 1; i <= 500; i++) {
-                String review = new Scanner(new File("sentimentTrainingData/pos/neg (" + i + ").txt")).useDelimiter("\\A").next();
-                trainingData.add(createInstance(review,"negative"));
+                String review = new Scanner(new File("sentimentTrainingData/neg/neg (" + i + ").txt")).useDelimiter("\\A").next();
+                addInstance("negative", review, trainingData);
             }
         } catch (Exception ex) {
             Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE, null, ex);
@@ -72,5 +75,62 @@ public class Classifier {
         new FilteredClassifier().setFilter(filter);
         //classifier.setClassifier(new J48());
         //classifier.setClassifier(new SMO());
+
+        //use training data to train classifier
+        try {
+            classifier.buildClassifier(trainingData);
+        } catch (Exception ex) {
+            Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    //add an instance to the data
+    private void addInstance(String classValue, String text, Instances data) {
+        Instance instance = makeInstance(text, data);
+        instance.setClassValue(classValue);
+        data.add(instance);
+    }
+
+    //Classify an instance
+    public Instance classify(Instance instance) {
+        //System.out.println("classifying in progress...");
+        instance.setClassMissing();
+        double label;
+        try {
+            label = classifier.classifyInstance(instance);
+            instance.setClassValue(label);
+            //System.out.println("classifying worked");
+        } catch (Exception ex) {
+            Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE, null, ex);
+            //System.out.println("classifying error");
+        }
+        return instance;
+    }
+
+    //create an instance from a string and classify it.
+    public Instance classify(String text) {
+        Instance instance = makeInstance(text, trainingData);
+        instance = classify(instance);
+        return instance;
+    }
+
+    public double[] getLikelyhoods(String text) {
+        Instance instance = classify(text);
+        double[] likelyhoods = new double[2];
+        try {
+            likelyhoods = classifier.distributionForInstance(instance);
+        } catch (Exception ex) {
+            Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return likelyhoods;
+    }
+
+    public String getClass(String text) {
+        double[] likelyhoods = getLikelyhoods(text);
+        if (likelyhoods[0] < likelyhoods[1]) {
+            return classValues.get(1);
+        } else {
+            return classValues.get(0);
+        }
     }
 }
