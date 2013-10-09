@@ -27,6 +27,7 @@ public class Classifier {
     private Instances trainingData;
     private Instances testData;
     ArrayList<String> classValues = new ArrayList();
+    ArrayList<Attribute> attributes = new ArrayList();
 
     //create an instance from a string.
     public Instance makeInstance(String body, Instances data) {
@@ -41,8 +42,6 @@ public class Classifier {
     }
 
     public Classifier() {
-        //create list of attributes
-        ArrayList<Attribute> attributes = new ArrayList();
         //add first attribute: the reviews
         attributes.add(new Attribute("Review", (ArrayList) null));
         //create list of classes that a review could be classed as
@@ -52,7 +51,6 @@ public class Classifier {
         //create trainingData structure
         trainingData = new Instances("Instances", attributes, 10);
         trainingData.setClassIndex(trainingData.numAttributes() - 1);
-
         //add training data
         try {
             for (int i = 1; i <= 500; i++) {
@@ -72,9 +70,9 @@ public class Classifier {
         classifier = new FilteredClassifier();
         classifier.setFilter(filter);
         classifier.setClassifier(new NaiveBayes());
-        new FilteredClassifier().setFilter(filter);
         //classifier.setClassifier(new J48());
         //classifier.setClassifier(new SMO());
+        new FilteredClassifier().setFilter(filter);
 
         //use training data to train classifier
         try {
@@ -114,6 +112,7 @@ public class Classifier {
         return instance;
     }
 
+    // Return for each class how likely it is that the input text belongs to this class
     public double[] getLikelyhoods(String text) {
         Instance instance = classify(text);
         double[] likelyhoods = new double[2];
@@ -125,6 +124,7 @@ public class Classifier {
         return likelyhoods;
     }
 
+    // Classify a piece of text, return the class as a string
     public String getClass(String text) {
         double[] likelyhoods = getLikelyhoods(text);
         if (likelyhoods[0] < likelyhoods[1]) {
@@ -132,5 +132,29 @@ public class Classifier {
         } else {
             return classValues.get(0);
         }
+    }
+    
+    //Evaluate classifier
+    public void evaluate(){
+        testData = new Instances("Instances", attributes, 10);
+        testData.setClassIndex(testData.numAttributes() - 1);
+        Evaluation eval;
+        try {
+            for (int i = 501; i <= 1000; i++) {
+                String review = new Scanner(new File("sentimentTrainingData/pos/pos (" + i + ").txt")).useDelimiter("\\A").next();
+                addInstance("positive", review, testData);
+            }
+            for (int i = 501; i <= 1000; i++) {
+                String review = new Scanner(new File("sentimentTrainingData/neg/neg (" + i + ").txt")).useDelimiter("\\A").next();
+                addInstance("negative", review, testData);
+            }
+            eval = new Evaluation(trainingData);
+            eval.evaluateModel(classifier, testData);
+            System.out.println(eval.toSummaryString("\nEvaluation Results\n\n", false));
+            System.out.println(eval.pctCorrect()); //output percent correctly predicted from test data
+        } catch (Exception ex) {
+            Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Evaluation failed");
+        }        
     }
 }
