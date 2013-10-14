@@ -124,6 +124,17 @@ public class Classifier {
         return likelyhoods;
     }
 
+    public double getLikelyhood(String text) {
+        double certainty;
+        double[] likelyhoods = getLikelyhoods(text);
+        if (likelyhoods[0] < likelyhoods[1]) {
+            certainty = likelyhoods[1];
+        } else {
+            certainty = likelyhoods[0];
+        }
+        return certainty;
+    }
+
     // Classify a piece of text, return the class as a string
     public String getClass(String text) {
         double[] likelyhoods = getLikelyhoods(text);
@@ -133,9 +144,9 @@ public class Classifier {
             return classValues.get(0);
         }
     }
-    
+
     //Evaluate classifier
-    public void evaluate(){
+    public void evaluate() {
         testData = new Instances("Instances", attributes, 10);
         testData.setClassIndex(testData.numAttributes() - 1);
         Evaluation eval;
@@ -155,6 +166,6 @@ public class Classifier {
         } catch (Exception ex) {
             Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Evaluation failed");
-        }        
+        }
     }
 }
