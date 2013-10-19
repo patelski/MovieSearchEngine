@@ -77,7 +77,7 @@ public class Demo {
                     ie.update(entry.getKey());
                 }
             }
-            System.out.println("Processed movie " + entry.getKey() + ".");
+            System.out.println("Processed movie " + entry.getKey());
         }
     }
     
@@ -95,8 +95,8 @@ public class Demo {
     static private void writeTfIdfToFile() throws Exception {
         String filename = "tf-idf.csv";
         BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
-        bw.write("term,docId,tf,df,idf,tf-idf");
-//        bw.write("term,docId,tf-idf");
+        bw.write("term,docId,tf-idf");
+//        bw.write("term,docId,tf,df,idf,tf-idf");
         bw.newLine();
         
         int docCount = docIdToContent.size();
@@ -107,23 +107,25 @@ public class Demo {
             for (Map.Entry<String, Integer> e : ie.getDocIdToTf().entrySet()) {
                 int tf = e.getValue();
                 StringBuilder builder = new StringBuilder();
-//                builder.append(entry.getKey()).append(',').append(e.getKey()).append(',').append(tf * idf);
-                builder.append(entry.getKey()).append(',').append(e.getKey()).append(',').append(tf).append(',').append(df).append(',').append(idf).append(',').append(tf * idf);
+                builder.append(entry.getKey()).append(',').append(e.getKey()).append(',').append(tf * idf);
+//                builder.append(entry.getKey()).append(',').append(e.getKey()).append(',').append(tf).append(',').append(df).append(',').append(idf).append(',').append(tf * idf);
                 bw.write(builder.toString());
 //                bw.write(entry.getKey() + "," + e.getKey() + "," + (tf * idf));
 //                bw.write(entry.getKey() + "," + e.getKey() + "," + tf + "," + df + "," + idf + "," + (tf * idf));
                 bw.newLine();
             }
-            System.out.println("Processed term " + entry.getKey()+ ".");
+            System.out.println("Processed term " + entry.getKey());
         }
 
         bw.flush();
         bw.close();
         
-        System.out.println("File " + "tf-idf.csv" + " was created.");
+        System.out.println("File " + filename + " was created.");
     }
     
     static public void main(String[] args) throws Exception {
+        System.out.println("maximum amount of memory: " + Runtime.getRuntime().maxMemory() + " bytes");
+        
         String XMLFilename = "movies.xml";
         
         
@@ -135,8 +137,8 @@ public class Demo {
         // tokenize each document
         System.out.println("Starting to tokenize...");
         for (Map.Entry<String, ArrayList<String>> entry : docIdToContent.entrySet()) {
+            System.out.println("Processing movie " + entry.getKey());
             entry.setValue(TextAnalyzer.tokenizeText(entry.getValue().get(0)));
-            System.out.println("Processed movie " + entry.getKey() + ".");
         }
         System.out.println("Finished tokenizing.");
         

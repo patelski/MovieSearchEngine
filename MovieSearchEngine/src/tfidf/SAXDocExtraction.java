@@ -69,7 +69,7 @@ public class SAXDocExtraction extends DefaultHandler {
                 ArrayList<String> content = new ArrayList<String>();
                 content.add(builder.deleteCharAt(builder.length() - 1).toString());
                 docIdToContent.put(id, content);
-                System.out.println("Processed movie " + id + ".");
+                System.out.println("Processed movie " + id);
             }
         }
     }
@@ -109,8 +109,8 @@ public class SAXDocExtraction extends DefaultHandler {
     /**
      * Because the default parser only generates exceptions for fatal errors,
      * and because the information about the errors provided by the default
-     * parser is somewhat limited, the SAXflvs program defines its own error
-     * handling, through the MyErrorHandler class.
+     * parser is somewhat limited, the SAXDocExtraction program defines its own 
+     * error handling, through the MyErrorHandler class.
      */
     private static class MyErrorHandler implements ErrorHandler {
 
