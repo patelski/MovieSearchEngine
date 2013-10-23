@@ -25,8 +25,10 @@ import org.xml.sax.SAXException;
  *
  * @author Stefan
  *
- * TODO: classify movies.xml get test data from rotten tomatoes reviews
+ * TODO:
+ * find out which other Weka algorithms might be useful to test
  * Implement my own classification algorithm
+ * get rottentomatoes.com test set
  */
 public class SentimentClassification {
 
