@@ -85,7 +85,7 @@ public class SentimentClassification {
             //Using factory get an instance of document builder
             DocumentBuilder db = dbf.newDocumentBuilder();
             //parse using builder to get DOM representation of the XML file
-            dom = db.parse("../movies_test.xml");
+            dom = db.parse("../movies.xml");
         } catch (ParserConfigurationException | SAXException | IOException pce) {
             pce.printStackTrace();
         }
@@ -99,7 +99,7 @@ public class SentimentClassification {
                 Element reviewsEL = getChildByTagName(movie, "reviews");
                 // it works at least up to this point
                 NodeList reviews = reviewsEL.getElementsByTagName("review");
-                System.out.println(reviews.getLength());
+                //System.out.println(reviews.getLength());
                 int counter = 0;
                 int total = 0;
                 int score = 0;
@@ -110,7 +110,7 @@ public class SentimentClassification {
                             String review = reviewEL.getFirstChild().getNodeValue().split("$$")[0];
                             String pnpolarity = classifier.getClass(review);
                             int likelyhood = (int) Math.round(100 * classifier.getLikelyhood(review));
-                            System.out.println("Review: " + review + " (" + likelyhood + "% " + pnpolarity + ")");
+                            //System.out.println("Review: " + review + " (" + likelyhood + "% " + pnpolarity + ")");
                             reviewEL.getFirstChild().setNodeValue(review + "$$" + pnpolarity + "$$" + likelyhood);
                             counter++;
                             total += Math.round(100 * classifier.getLikelyhoods(review)[0]);
