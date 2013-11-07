@@ -4,7 +4,7 @@
 
 <html lang="en">
 <head runat="server">
-    <script src=http://wami.csail.mit.edu/wami-2.0.js></script>
+    <script src="http://wami.csail.mit.edu/wami-2.0.js"></script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Movie Reviewer</title>
@@ -16,7 +16,7 @@
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
 </head>
-<body style="background-image :url('img/bc2.jpg');">
+<body style="background-image: url('img/bc2.jpg');">
     <form runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
@@ -50,11 +50,13 @@
                         </button>
 
                         <a class="brand" runat="server" href="Default">Home</a>
-
+                        <a class="brand" runat="server" href="Search">Search</a>
+                        <a class="brand" runat="server" href="UserMovies">My Movies</a>
                         <div class="nav-collapse collapse">
                             <ul class="nav nav-pills nav-stacked">
                                 <li><a runat="server" href="About">About</a></li>
                                 <li><a runat="server" href="Contact">Contact</a></li>
+
                             </ul>
                             <asp:LoginView runat="server" ViewStateMode="Disabled">
                                 <AnonymousTemplate>
@@ -81,7 +83,7 @@
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
             <hr />
-            <footer style="color:gray;">
+            <footer style="color: gray;">
                 <p>&copy; <%: DateTime.Now.Year %> - Movie Reviewer</p>
             </footer>
         </div>

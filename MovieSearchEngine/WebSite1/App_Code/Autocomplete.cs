@@ -25,11 +25,13 @@ public class Autocomplete : System.Web.Services.WebService
         string connStr = ConfigurationManager.ConnectionStrings["moviesConnection"].ConnectionString;
         using (SqlConnection con = new SqlConnection(connStr))
         {
-            SqlCommand cmd = new SqlCommand("AutoProc", con);
+            SqlCommand cmd = new SqlCommand("Autocomplete", con);
             cmd.CommandType = CommandType.StoredProcedure;
 
             SqlParameter parameter = new SqlParameter("@name1", name1);
+            //SqlParameter parameter2 = new SqlParameter("@name2", name2);
             cmd.Parameters.Add(parameter);
+            //cmd.Parameters.Add(parameter2);
             con.Open();
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())

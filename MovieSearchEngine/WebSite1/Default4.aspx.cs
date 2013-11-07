@@ -12,7 +12,7 @@ public partial class Default4 : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        
+
     }
     protected void Button1_Click(object sender, EventArgs e)
     {
@@ -21,7 +21,7 @@ public partial class Default4 : System.Web.UI.Page
         {
 
             StreamReader str = new StreamReader(file.ToString());
-            
+
             //String txt = Convert.ToBase64String(b);
             string content = str.ReadToEnd();
             var b = Encoding.UTF8.GetBytes(content);
@@ -29,7 +29,7 @@ public partial class Default4 : System.Web.UI.Page
             try
             {
                 // Create the request
-                string xmlRequest = "<?xml version=\"1.0\" encoding=\"utf-8\" ?><uclassify xmlns=\"http://api.uclassify.com/1/RequestSchema\" version=\"1.01\"><texts><textBase64 id=\"Text1\">"+ txt +"</textBase64></texts><writeCalls writeApiKey=\"6z5Qqg4YmRo9OLhm2qN3ISFphw\" classifierName=\"ReviewClassifier\"><train id=\"Train\" className=\"Negative\" textId=\"Text1\"/></writeCalls></uclassify>";
+                string xmlRequest = "<?xml version=\"1.0\" encoding=\"utf-8\" ?><uclassify xmlns=\"http://api.uclassify.com/1/RequestSchema\" version=\"1.01\"><texts><textBase64 id=\"Text1\">" + txt + "</textBase64></texts><writeCalls writeApiKey=\"6z5Qqg4YmRo9OLhm2qN3ISFphw\" classifierName=\"ReviewClassifier\"><train id=\"Train\" className=\"Negative\" textId=\"Text1\"/></writeCalls></uclassify>";
 
                 // Send the request
                 HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://api.uclassify.com");
@@ -46,7 +46,7 @@ public partial class Default4 : System.Web.UI.Page
                 reader.Close();
                 wr.Write(xmlResponse);
             }
-                
+
             catch (Exception e2)
             {
                 Console.WriteLine(e2.Message);
