@@ -10,10 +10,9 @@
 </head>
 <body>
     <form id="form1" runat="server">
-    <div>
-    
-    </div>
-        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Button" style="height: 26px" />
+        <div>
+        </div>
+        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Button" Style="height: 26px" />
     </form>
 </body>
 </html>

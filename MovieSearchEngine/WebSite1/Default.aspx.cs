@@ -11,8 +11,8 @@ public partial class _Default : Page
     static int i = 1;
     protected void Page_Load(object sender, EventArgs e)
     {
-        
-        if(!IsPostBack)
+
+        if (!IsPostBack)
         {
             SetImageUrl();
         }
@@ -26,8 +26,8 @@ public partial class _Default : Page
     {
         if (i == 20)
             i = 1;
-            Image1.ImageUrl = "/img/" + i.ToString() + ".jpg";
-            i++;
-        }
-        
+        Image1.ImageUrl = "/img/" + i.ToString() + ".jpg";
+        i++;
     }
+
+}

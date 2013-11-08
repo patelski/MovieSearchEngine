@@ -15,6 +15,6 @@ public partial class ScoreBuilder : System.Web.UI.Page
     int i = 0;
     protected void Page_Load(object sender, EventArgs e)
     {
-        
+
     }
 }

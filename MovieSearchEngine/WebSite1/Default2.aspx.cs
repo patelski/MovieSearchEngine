@@ -38,7 +38,7 @@ public partial class Reviewer_Default2 : System.Web.UI.Page
         {
             foreach (System.Xml.XPath.XPathNavigator movie in file.CreateNavigator().Select("//movie"))
             {
-                string b = "", c = "", d = "", e2 = "", f = "", g = "", h = "", i = "", j = "", k = "", l = "", m = "", n = "", o = "";
+                string b = "", c = "", d = "", e2 = "", f = "", g = "", h = "", i = "", j = "", k = "", l = "", m = "", n = "", o = "", p = "";
                 Document movieIterator = new Document();
                 movieIterator.Add(new Field("id", movie.GetAttribute("id", string.Empty), Field.Store.YES, Field.Index.NO, Field.TermVector.NO));
                 int a = Convert.ToInt32(movie.GetAttribute("id", string.Empty));
@@ -104,7 +104,7 @@ public partial class Reviewer_Default2 : System.Web.UI.Page
                 if (movie.SelectSingleNode("actors") != null)
                 {
                     XPathNodeIterator xx = movie.SelectSingleNode("actors").SelectChildren(XPathNodeType.Element);
-                    while(xx.MoveNext())
+                    while (xx.MoveNext())
                     {
                         n = n + xx.Current.Value + "***";
                     }
@@ -121,8 +121,12 @@ public partial class Reviewer_Default2 : System.Web.UI.Page
 
                     movieIterator.Add(new Field("reviews", movie.SelectSingleNode("reviews").Value, Field.Store.YES, Field.Index.TOKENIZED, Field.TermVector.NO));
                 }
+                if (movie.SelectSingleNode("classifiedscore") != null)
+                {
+                    k = movie.SelectSingleNode("classifiedscore").Value;
+                }
                 SqlConnection con = new SqlConnection(connStr);
-                com = new SqlCommand("insert into movies(id,imageLink,name,score,MovieInfo,duration,genres,director,writer,TheatreRelease,DvdRelease,BOCollection,Production,actors,reviews) values (@a,@b,@c,@d,@e2,@f,@g,@h,@i,@j,@k,@l,@m,@n,@o)", con);
+                com = new SqlCommand("insert into movies(id,imageLink,name,score,MovieInfo,duration,genres,director,writer,TheatreRelease,DvdRelease,BOCollection,Production,actors,reviews,classifiedscore) values (@a,@b,@c,@d,@e2,@f,@g,@h,@i,@j,@k,@l,@m,@n,@o,@p)", con);
                 com.Parameters.Add("@a", a);
                 com.Parameters.Add("@b", b);
                 com.Parameters.Add("@c", c);
@@ -138,6 +142,7 @@ public partial class Reviewer_Default2 : System.Web.UI.Page
                 com.Parameters.Add("@m", m);
                 com.Parameters.Add("@n", n);
                 com.Parameters.Add("@o", o);
+                com.Parameters.Add("@o", p);
                 con.Open();
                 com.ExecuteNonQuery();
                 con.Close();
