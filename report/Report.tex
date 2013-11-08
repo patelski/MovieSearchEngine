@@ -1,0 +1,79 @@
+\documentclass[a4paper,twoside,11pt]{article}
+\usepackage{a4wide,graphicx,fancyhdr,amsmath,amssymb,wrapfig,parskip,float, caption, subcaption, verbatimbox, hyperref}
+
+%----------------------- Macros and Definitions --------------------------
+
+\setlength\headheight{20pt}
+\addtolength\topmargin{-10pt}
+\addtolength\footskip{20pt}
+
+\newcommand{\R}{{\mathbb R}}
+\newcommand{\dir}{\vec{d}}
+\newcommand{\pol}{{\cal P}}
+\newcommand{\robot}{{\cal R}}
+\newcommand{\triang}{{\cal T}}
+\newcommand{\dist}{\mathrm{dist}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\Mid}{:}
+\newcommand{\ch}{\mathcal{CH}}
+\newcommand{\exercise}[1]{\noindent{\bf Exercise #1:}}
+\newenvironment{solution}{\begingroup\Solenv}{\END\endgroup}
+\def\Solenv{\vspace{.5\baselineskip}\penalty100\advance\leftskip by\parindent
+  \advance\leftmargini by\parindent
+  \Sol\ \ignorespaces}
+\def\Sol{\noindent{\bf Solution\/:}\nobreak}
+\def\END{\unskip~\medbreak\medbreak\medbreak}
+\def\qed{\hfill$\Box$}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+
+\fancypagestyle{plain}{%
+\fancyhf{}
+\fancyhead[LO,RE]{\sffamily Eindhoven University of Technology}
+\fancyhead[RO,LE]{\sffamily }
+\fancyfoot[LO,RE]{\sffamily Department of Mathematics \& Computer Science}
+\fancyfoot[RO,LE]{\sffamily\bfseries\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RO,LE]{\sffamily }
+\fancyhead[LO,RE]{\sffamily Eindhoven University of Technology}
+\fancyfoot[LO,RE]{\sffamily Department of Mathematics \& Computer Science}
+\fancyfoot[RO,LE]{\sffamily\bfseries\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%redefinition of matrix so you can use for example \begin{pmatrix}[rowHeight]
+\makeatletter
+\renewcommand*\env@matrix[1][\arraystretch]{%
+  \edef\arraystretch{#1}%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{*\c@MaxMatrixCols c}}
+\makeatother
+
+%-------------------------------- Title ----------------------------------
+
+\title{\rule{\linewidth}{.75pt} \center{Title goes here}}
+\author{Stefan Patelski}
+% \date{}
+
+%--------------------------------- Text ----------------------------------
+
+\begin{document}
+\maketitle
+\vspace{-2\baselineskip}
+
+\bigskip
+\noindent\rule[2.5pt]{\textwidth}{0.75pt}
+
+\newpage
+
+\section{Introduction}
+
+
+\end{document}
