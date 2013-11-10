@@ -183,13 +183,28 @@ public class querysuggestions {
         word = word.replaceAll("V","F");
         word = word.replaceAll("^WH","W");
         word = regexReplacer(word, "W[^AEIOU]", "W", "", 2);
+        word = word.replaceAll("^X","S");
+        word = word.replaceAll("X","KS");
+        word = regexReplacer(word, "Y[^AEIOU]", "Y", "", 2);
+        word = word.replaceAll("Y$","");
+        word = word.replaceAll("Z","S");
+        if (word.length() > 1) {
+            word = word.substring(0,1) + word.substring(1, word.length()).replaceAll("[AEIOU]","");
+            for (int i = 0; i <= word.length()-2; i++){
+                String piece = word.substring(i, i+2);
+                if (piece.charAt(0) == piece.charAt(1)){
+                    word = word.replaceAll(piece,Character.toString(piece.charAt(0)));
+                }
+            }
+        }
+        
         return word;
     }
     
     public static int Metaphone(String one, String two) {
         int metaphone = 0;
         one = one.replaceAll("[^\\w\\s]", "");
-        levenshteinDistance(Metaphone(one),Metaphone(two));
+        metaphone = levenshteinDistance(Metaphone(one),Metaphone(two));
         return metaphone;
     }
     
@@ -205,7 +220,7 @@ public class querysuggestions {
         return vocabulary;
     }
 
-    public static String[] suggestions(String query) throws FileNotFoundException, IOException {
+    public static String[] suggestions(String query, boolean debugging) throws FileNotFoundException, IOException {
         query = query.toLowerCase();
         String[] suggestions = new String[2];
         String[] levenshteinword = new String[2];
@@ -222,7 +237,7 @@ public class querysuggestions {
         for (String word : vocabulary){
             if (!word.equals(query)){
                 int levenshteinDistance = levenshteinDistance(word, query);
-                int MetaphoneD = Metaphone(word, query);
+                
                 if (levenshteinDistance < levenshtein && levenshteinDistance != 0){
                     levenshtein = levenshteinDistance;
                     levenshteinword[0] = word;
@@ -230,29 +245,82 @@ public class querysuggestions {
                     levenshtein2 = levenshteinDistance;
                     levenshteinword[1] = word;
                 }
-                if (MetaphoneD < Metaphone){
-                    Metaphone = MetaphoneD;
-                    metaphoneword[0] = word;
-                } else if (MetaphoneD < Metaphone2){
-                    Metaphone2 = MetaphoneD;
-                    metaphoneword[1] = word;
+                if (debugging){
+                    int MetaphoneD = Metaphone(word, query);
+                    if (MetaphoneD < Metaphone){
+                        Metaphone = MetaphoneD;
+                        metaphoneword[0] = word;
+                    } else if (MetaphoneD < Metaphone2){
+                        Metaphone2 = MetaphoneD;
+                        metaphoneword[1] = word;
+                    }
                 }
             }
         }
-        if (!levenshteinword[0].equals(metaphoneword[0])){
-            suggestions[0] = levenshteinword[0];
-            suggestions[1] = metaphoneword[0];
+        suggestions[0] = levenshteinword[0];
+        if (debugging) {
+            if (!levenshteinword[0].equals(metaphoneword[0])) {
+                suggestions[1] = metaphoneword[0];
+            } else {
+                suggestions[1] = metaphoneword[0];
+            }
         } else {
-            suggestions[0] = levenshteinword[0];
-            suggestions[1] = metaphoneword[1];
+            suggestions[1] = levenshteinword[1];
         }
+
         return suggestions;
+    }
+    
+    public static String[] suggestions(String query) throws FileNotFoundException, IOException {
+        return suggestions(query, false);
+    }
+    
+    public static String swap(String input, int one, int two){
+        char[] c = input.toCharArray();
+        char temp = c[one];
+        c[one] = c[two];
+        c[two] = temp;
+        return new String(c);
+    }
+    
+    public static void evaluate() throws ParserConfigurationException, SAXException, IOException {
+        int n = 100;
+        int correctL = 0;
+        int correctM = 0;
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        //Using factory get an instance of document builder
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        //parse using builder to get DOM representation of the XML file
+        dom = db.parse("../movies.xml");
+        Element root = dom.getDocumentElement(); //get the root element
+        NodeList nl = root.getElementsByTagName("movie");
+        for (int i = 0; i < n; i++) { // for 500 movies
+            Element movieE = (Element) nl.item(i);
+            String movie = getTextValue(movieE, "name");
+            String movie2 = movie;
+            if (movie != null && movie.length() > 3){
+                int randomchar = 1+(int)(Math.random() * (movie.length()-1));
+                movie2 = swap(movie, randomchar, randomchar-1);
+                String[] suggestions = suggestions(movie2,true);
+                if (movie.toLowerCase().equals(suggestions[0])){
+                    correctL++;
+                }
+                if (movie.toLowerCase().equals(suggestions[1])){
+                    correctM++;
+                }
+            }  
+        }
+        System.out.println(100*((double)correctL/(double)n));
+        System.out.println(100*((double)correctM/(double)n));
     }
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
         System.out.println("Testing query suggestions...");
         //createVocabulary();
-        System.out.println(suggestions("corriolanus")[1]);
+        String[] suggestions = suggestions("Stefan");
+        System.out.println(suggestions[0]);
+        System.out.println(suggestions[1]);
+        evaluate();
         //System.out.println(levenshteinDistance("sunday","saturday"));
     }
 }
