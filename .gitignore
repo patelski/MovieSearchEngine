@@ -6,3 +6,10 @@
 /MovieSearchEngine/build/
 WebSite1
 /MovieSearchEngine/WebSite1/packages.config
+/report/*.aux
+/report/*.log
+/report/*.out
+/report/*.gz
+/report/*.db
+
+/report/Report.pdf
