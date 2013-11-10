@@ -1,0 +1,48 @@
+\subsection{Tf-idf: F.N. Butnariu}
+\subsubsection{Motivation}
+Initially the tf-idf component was developed to primarily support the vector space model, but subsequently it became obvious that it will also play an important role in the hierarchical agglomerative clustering task, where cosine similarity was employed to measure resemblance of movies based on information such as title, description, genre, director and cast.
+
+Considering our dataset of movies in this task we aimed to assign a tf-idf weight to each term in each document pertaining information about a movie. The input may be viewed as a collection of documents, where a document contains metadata about a single movie such as title, description, genre, director, cast, reviews and other details. The output is a set of triples \verb+<term, ID, weight>+, where \verb+ID+ identifies a document in our collection in which \verb+term+ has a tf-idf value given by \verb+weight+.
+
+\subsubsection{Approach}
+
+The entire information about our set of movies resides in a single XML file, so the first challenge was to transpose this information into a document representation corresponding to each movie in our dataset. This was accomplished using a SAX parser, which basically created for each movie a String to which all the relevant information about the movie was appended. Therefore, at this stage each document pertaining information about a movie can be viewed as a large String. In the next stage by employing one of Lucene's text analyzers each String corresponding to a movie was tokenized into a bag of words. We do not take into account the order of the words within a document, but instead only consider the number of occurrences of a word inside a document. Here we use $term$ and $word$ interchangeably.
+
+At the heart of the tf-idf component lies an index having the structure represented in Listing~\ref{lst:tf-idf-index}. The index records for each term its document frequency, i.e. the number of documents in our collection in which term occurs. In addition, for each term a list of pairs \verb+<ID>, <term frequency>+ is stored. For every document identified by \verb+ID+, in which the term is present, there is a corresponding term frequency, i.e. the number of occurrences of the term inside the document.
+
+\begin{lstlisting}[caption={The structure of the tf-idf index},label={lst:tf-idf-index}]
+<term>, <document frequency>:
+	(<ID>, <term frequency>;
+	<ID>, <term frequency>;
+	...
+	<ID>, <term frequency>; ...)
+<term>, <document frequency>:
+	(<ID>, <term frequency>;
+	<ID>, <term frequency>;
+	...
+	<ID>, <term frequency>; ...)
+\end{lstlisting}
+
+This index was built by going over each document in our collection in one pass and examining each term within a document. Thus it also functions as a dictionary since it encompasses all the terms found in our document collection. 
+
+By making use of this index a tf-idf weight can quickly be calculated using Equation~\ref{eq:tf-idf}.
+
+\begin{equation}
+\label{eq:tf-idf}
+tfidf_{t,d} = tf_{t,d} \times log\frac{N}{df_t}
+\end{equation}
+
+The set of triples \verb+<term, ID, weight>+ can be computed by going over the entire index in one pass.
+
+\subsubsection{Argumentation for choice}
+
+Parsing the XML file holding our dataset of movies presented us with two options, namely, either using a SAX parser or a DOM parser. We opted to employ the former approach because of its reduced memory overhead in comparison with the latter technique, which would load in memory a costly tree data structure for the entire XML file.
+
+Following the same line of reducing memory overhead and keeping in mind that in-memory operations are much faster than disk access operations, we decided to use the index described earlier to compute tf-idf weights on the fly instead of relying on a much larger data structure, which would have hold for every possible term and for every possible document a tf-idf weight.
+
+Although the tf-idf weighting scheme is designed to assign a low weight to terms appearing in almost all documents, we opted to leave out stop words in most of the cases.
+
+\subsubsection{Evaluation of obtained results}
+
+\subsubsection{Conclusions}
+
