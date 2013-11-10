@@ -62,20 +62,22 @@ public class querysuggestions {
             String name = getTextValue(movie, "name");
             String desc = getTextValue(movie, "MovieInfo");
             if (desc != null){
-                descwords = desc.replaceAll("[^a-zA-Z ]", "").split("\\s+");
+                descwords = desc.toLowerCase().replaceAll("[^a-zA-Z ]", "").split("\\s+");
             } else {
                 descwords = new String[0];
             }
             if (name != null){
-                words.add(name);
+                words.add(name.toLowerCase());
             }
             words.addAll(Arrays.asList(descwords));
         }
         try (PrintWriter printWriter = new PrintWriter(
-                                 "C:/Desktop/words.txt",
+                                 "words.txt",
                                  "UTF-8")) {
-            for (String word : words){      
-                printWriter.println(word);
+            for (String word : words){
+                if (word.length() > 0){
+                    printWriter.println(word);
+                }
             }
 
         } catch (FileNotFoundException | UnsupportedEncodingException fileNotFoundException) {
@@ -83,20 +85,117 @@ public class querysuggestions {
         }
     }
     
+    public static int levenshteinDistance(String s, String t) {
+        int m = s.length();
+        int n = t.length();
+        int[][] d = new int[m+1][n+1];
 
-    public int levenshteinDistance(String one, String two) {
-        int distance = 0;
-        return distance;
+        for (int i = 1; i <= m; i++){
+            d[i][0] = i;
+        }
+        
+        for (int j = 1; j <= n; j++){
+            d[0][j] = j;
+        }
+        
+        for (int j = 1; j <= n; j++){
+            for (int i = 1; i <= m; i++){
+                if (s.charAt(i-1) == t.charAt(j-1)){
+                    d[i][j] = d[i-1][j-1];
+                } else {
+                    int minimum = 999;
+                    if ((d[i-1][j] + 1) < minimum) {minimum = (d[i-1][j] + 1);}
+                    if ((d[i][j-1] + 1) < minimum) {minimum = (d[i][j-1] + 1);}
+                    if ((d[i-1][j-1] + 1) < minimum) {minimum = (d[i-1][j-1] + 1);}
+                    d[i][j] = minimum;
+                }
+            }
+        }
+        /* debugging
+        for (int i = 0; i <= m; i++){
+            for (int j = 0; j <= n; j++){
+                System.out.print("|"+ d[i][j]);
+            }
+            System.out.println();
+        }
+        */
+        
+        return d[m][n];
+    }
+    
+    public static Set<String> regexFinder(String regex, String word, int size) {
+        Set<String> found = new HashSet<>();
+        for (int i = 0; i <= word.length()-size; i++){
+            String piece = word.substring(i, i+size);
+            if (piece.matches(regex)){
+                found.add(piece);
+            }
+        }
+        return found;
+    }
+    
+    public static String regexReplacer(String word, String regexmatch, String regexreplace, String replacement, int size) {
+        for (String piece : regexFinder(regexmatch,word,size)){
+            String piece2 = piece.replaceFirst(regexreplace, replacement);
+            word = word.replaceAll(piece, piece2);
+        }
+        return word;
     }
 
-    public int Metaphone(String one, String two) {
+    public static String Metaphone(String word){
+        word = word.toUpperCase();
+        word = word.replaceFirst("^KN","N");
+        word = word.replaceFirst("^GN","N");
+        word = word.replaceFirst("^PN","N");
+        word = word.replaceFirst("^AE","E");
+        word = word.replaceFirst("^WR","R");
+        word = word.replaceFirst("^PF","F");
+        word = word.replaceFirst("^WH","W");
+        word = word.replaceFirst("^X","S");
+        word = word.replaceFirst("MB$","M");
+        word = word.replaceAll("SCH","SKH");
+        word = word.replaceAll("CIA","XIA");
+        word = word.replaceAll("CH","XH");
+        word = word.replaceAll("CI","SI");
+        word = word.replaceAll("CE","SE");
+        word = word.replaceAll("CY","SY");
+        word = word.replaceAll("C","K");
+        word = word.replaceAll("DGE","JGE");
+        word = word.replaceAll("DGY","JGY");
+        word = word.replaceAll("DGI","JGI");
+        word = word.replaceAll("D","T");
+        word = regexReplacer(word, "GH[^AEIOU]", "G", "", 3);
+        word = word.replaceAll("GN$","N");
+        word = word.replaceAll("GNED$","NED");
+        word = regexReplacer(word, "[^G]G[IEY]", "G", "J", 3);
+        word = word.replaceAll("G","K");
+        word = regexReplacer(word, "[AEIOU]H[^AEIOU]", "H", "", 3);
+        word = word.replaceAll("CK","K");
+        word = word.replaceAll("PH","F");
+        word = word.replaceAll("Q","K");
+        word = word.replaceAll("SH","XH");
+        word = word.replaceAll("SIO","XIO");
+        word = word.replaceAll("SIA","XIA");
+        word = word.replaceAll("TIA","XIA");
+        word = word.replaceAll("TIO","XIO");
+        word = word.replaceAll("TH","0");
+        word = word.replaceAll("TCH","CH");
+        word = word.replaceAll("V","F");
+        word = word.replaceAll("^WH","W");
+        word = regexReplacer(word, "W[^AEIOU]", "W", "", 2);
+        return word;
+    }
+    
+    public static int Metaphone(String one, String two) {
         int metaphone = 0;
+        one = one.replaceAll("[^\\w\\s]", "");
+        levenshteinDistance(Metaphone(one),Metaphone(two));
         return metaphone;
     }
     
     public static Set<String> vocabulary() throws FileNotFoundException, IOException{
         Set<String> vocabulary = new HashSet<>();
-        FileInputStream fstream = new FileInputStream("C:/Desktop/words.txt");
+        FileInputStream fstream = new FileInputStream("words.txt");
         try (BufferedReader br = new BufferedReader(new InputStreamReader(fstream))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -106,31 +205,38 @@ public class querysuggestions {
         return vocabulary;
     }
 
-    public String[] suggestions(String query) throws FileNotFoundException, IOException {
+    public static String[] suggestions(String query) throws FileNotFoundException, IOException {
+        query = query.toLowerCase();
         String[] suggestions = new String[2];
         String[] levenshteinword = new String[2];
         String[] metaphoneword = new String[2];
+        levenshteinword[0] = "none";
+        levenshteinword[1] = "none";
+        metaphoneword[0] = "none";
+        metaphoneword[1] = "none";
         Set<String> vocabulary = vocabulary();
         int levenshtein = 999;
         int levenshtein2 = 999;
         int Metaphone = 999;
         int Metaphone2 = 999;
-        for (String word : vocabulary){  
-            int levenshteinDistance = levenshteinDistance(word, query);
-            int MetaphoneD = Metaphone(word, query);
-            if (levenshteinDistance < levenshtein && levenshteinDistance != 0){
-                levenshtein = levenshteinDistance;
-                levenshteinword[0] = query;
-            } else if (levenshteinDistance < levenshtein2 && levenshteinDistance != 0) {
-                levenshtein2 = levenshteinDistance;
-                levenshteinword[1] = query;
-            }
-            if (MetaphoneD < Metaphone && MetaphoneD != 0){
-                Metaphone = MetaphoneD;
-                metaphoneword[0] = query;
-            } else if (MetaphoneD < Metaphone2 && MetaphoneD != 0){
-                Metaphone2 = MetaphoneD;
-                metaphoneword[1] = query;
+        for (String word : vocabulary){
+            if (!word.equals(query)){
+                int levenshteinDistance = levenshteinDistance(word, query);
+                int MetaphoneD = Metaphone(word, query);
+                if (levenshteinDistance < levenshtein && levenshteinDistance != 0){
+                    levenshtein = levenshteinDistance;
+                    levenshteinword[0] = word;
+                } else if (levenshteinDistance < levenshtein2 && levenshteinDistance != 0) {
+                    levenshtein2 = levenshteinDistance;
+                    levenshteinword[1] = word;
+                }
+                if (MetaphoneD < Metaphone){
+                    Metaphone = MetaphoneD;
+                    metaphoneword[0] = word;
+                } else if (MetaphoneD < Metaphone2){
+                    Metaphone2 = MetaphoneD;
+                    metaphoneword[1] = word;
+                }
             }
         }
         if (!levenshteinword[0].equals(metaphoneword[0])){
@@ -145,5 +251,8 @@ public class querysuggestions {
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
         System.out.println("Testing query suggestions...");
+        //createVocabulary();
+        System.out.println(suggestions("corriolanus")[1]);
+        //System.out.println(levenshteinDistance("sunday","saturday"));
     }
 }
