@@ -1,6 +1,6 @@
 \subsection{Crawler : S.R. Patra}
 \subsubsection{Motivation}
-The very first task was to collect data for our project. We decided to implement a focused crawler for Rotten tomatoes website to collect information about different movies. Large collection of movies with credible reviews made Rotten Tomatoes a suitable candidate for us to get our data from. The goal was to start with a seed URL and extract all the yet unseen URLs on that HTML page along with the metadata about the movie such as movie name, director, producers,reviews etc. The process needs to be repeated for all the collected links.
+The very first task was to collect data for our project. We decided to implement a focused crawler\cite{2ii35} for Rotten tomatoes website to collect information about different movies. Large collection of movies with credible reviews made Rotten Tomatoes a suitable candidate for us to get our data from. The goal was to start with a seed URL and extract all the yet unseen URLs on that HTML page along with the metadata about the movie such as movie name, director, producers,reviews etc. The process needs to be repeated for all the collected links.
 \subsubsection{Approach}
 For each page, the method \textit{CollectData} in the crawler read the HTML content line by line, only collecting the relevant information and disregarding all the other content that were not relevant to us. This was done with the help of an HTML parser which used \textit{Jsoup} library functions. Whenever relevant data were encountered, they were appended to an XML document. To find the movie URLs , Java's pattern matching functionality was being used which looks for a particular pattern of anchor texts which are specific to movie pages. The crawler architecture is shown in fig.\ref{fig:architecture}.
 
@@ -28,10 +28,10 @@ After several iterations, we collected 6227 movies each containing movie metadat
 \subsubsection{Motivation}
 Lucene provides very rich library functions to implement indexing and search. So we implemented lucene search as a metric to evaluate our boolean and vector space model performances. 
 \subsubsection{Approach}
-Lucene.net library was used for generating the index and for getting the search results from the processed query. We limited our search results to be 10 top relevant results. Index was created for different fields to allow the user to search based on any criteria they want i.e. based on actor, director, genres etc. We also implemented the \textit{Autocomplete} feature to help the user with the query. This feature was developed in \textit{JQuery} and was implemented as a web service which queries the database about possible movie names after each input letter in the text box. 
+Lucene.net library\cite{lucene} was used for generating the index and for getting the search results from the processed query. We limited our search results to be 10 top relevant results. Index was created for different fields to allow the user to search based on any criteria they want i.e. based on actor, director, genres etc. We also implemented the \textit{Autocomplete} feature to help the user with the query. This feature was developed in \textit{JQuery}\cite{jquery} and was implemented as a web service which queries the database about possible movie names after each input letter in the text box. 
 
 \paragraph{}
-Wild card queries were used to provide query suggestions to the user when the user only knows parts of the terms in the query. The speech to text query assistance feature was also included using the HTML5 Webkit speech. All the features discussed above are shown in fig.\ref{fig:search}.
+Wild card queries\cite{wildcard} were used to provide query suggestions to the user when the user only knows parts of the terms in the query. The speech to text query assistance feature was also included using the HTML5 Webkit speech. All the features discussed above are shown in fig.\ref{fig:search}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=4.5in]{search.png}
