@@ -1,5 +1,5 @@
 \documentclass[a4paper,twoside,11pt]{article}
-\usepackage{graphicx,fancyhdr,amsmath,amssymb,float, caption, hyperref}
+\usepackage{a4wide,graphicx,fancyhdr,amsmath,amssymb,float, caption, hyperref}
 
 %----------------------- Macros and Definitions --------------------------
 
@@ -72,9 +72,22 @@
 \noindent\rule[2.5pt]{\textwidth}{0.75pt}
 
 \newpage
+\tableofcontents
+\newpage
 
 \section{Introduction}
 
+\section{Scope and Architecture}
+\subsection{Scope}
+\input{scope.tex}
+\subsection{Architecture}
+\input{architecture.tex}
+
+\section{Information Retrieval}
 \input{Ranjan.tex}
 
+\section{Machine Learning}
+
+\section{Conclusion}
+\input{conclusion.tex}
 \end{document}
