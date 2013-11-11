@@ -37,4 +37,8 @@ public class IndexEntry {
             docIdToTf.put(docId, ++tf);
         }
     }
+    
+    public int getTfOfDocId(String docId) {
+        return docIdToTf.get(docId);
+    }
 }

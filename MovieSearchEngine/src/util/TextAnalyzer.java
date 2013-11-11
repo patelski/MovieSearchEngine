@@ -19,27 +19,34 @@ import org.apache.lucene.util.*;
  * @author flavius
  */
 public class TextAnalyzer {
-    static public ArrayList<String> tokenizeText(String text) throws Exception {
+
+    public static ArrayList<String> tokenizeText(String text, String analyzerType) throws Exception {
         if ("".equals(text)) {
             return new ArrayList<String>();
         }
-        
+
         Version matchVersion = Version.LUCENE_45;
 
-        // "This is a demo of the TokenStream API" results in
-        // "demo" "tokenstream" "api"
-        Analyzer analyzer = new StandardAnalyzer(matchVersion);
+        Analyzer analyzer;
+        if (Constants.STANDARD_ANALYZER.equals(analyzerType)) {
+            // "This is a demo of the TokenStream API" results in
+            // "demo" "tokenstream" "api"
+            analyzer = new StandardAnalyzer(matchVersion);
+        } else if (Constants.WHITESPACE_ANALYZER.equals(analyzerType)) {
+            // "This is a demo of the TokenStream API" results in
+            // "This" "is" "a" "demo" "of" "the" "TokenStream" "API"
+            analyzer = new WhitespaceAnalyzer(matchVersion);
+        } else if (Constants.SIMPLE_ANALYZER.equals(analyzerType)) {
+            // "This is a demo of the TokenStream API" results in
+            // "this" "is" "a" "demo" "of" "the" "tokenstream" "api" 
+            analyzer = new SimpleAnalyzer(matchVersion);
+        } else if (Constants.ENGLISH_ANALYZER.equals(analyzerType)) {
+            analyzer = new EnglishAnalyzer(matchVersion);
+        } else {
+            // This is supposed to be bad programming.
+            throw new RuntimeException("Type of text analyzer is invalid.");
+        }
 
-        // "This is a demo of the TokenStream API" results in
-        // "This" "is" "a" "demo" "of" "the" "TokenStream" "API"
-//        Analyzer analyzer = new WhitespaceAnalyzer(matchVersion);
-
-        // "This is a demo of the TokenStream API" results in
-        // "this" "is" "a" "demo" "of" "the" "tokenstream" "api" 
-//        Analyzer analyzer = new SimpleAnalyzer(matchVersion);
-
-//        Analyzer analyzer = new EnglishAnalyzer(matchVersion);
-        
         TokenStream ts = analyzer.tokenStream("field", new StringReader(text));
 
 //        OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);
@@ -63,9 +70,9 @@ public class TextAnalyzer {
         CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
 
         try {
-            ts.reset(); 
+            ts.reset();
             ArrayList<String> tokens = new ArrayList<String>();
-            
+
             // print all tokens until stream is exhausted
             while (ts.incrementToken()) {
 //                System.out.println(termAtt.toString());

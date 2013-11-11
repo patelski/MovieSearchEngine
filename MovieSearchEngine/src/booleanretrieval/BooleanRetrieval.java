@@ -14,14 +14,14 @@ import java.util.*;
  */
 public class BooleanRetrieval {
 
-    static private HashMap<String, ArrayList<String>> docIdToContent;
-    static private HashMap<String, Posting> termToPosting = new HashMap<String, Posting>();
+    private static HashMap<String, ArrayList<String>> docIdToContent;
+    private static HashMap<String, Posting> termToPosting = new HashMap<String, Posting>();
 
-    static public void readIndexFromDisk() throws Exception {
+    public static void readIndexFromDisk() throws Exception {
         FileInputStream fis;
         ObjectInputStream in;
         try {
-            fis = new FileInputStream("index.ser");
+            fis = new FileInputStream("boolean_index.ser");
             in = new ObjectInputStream(fis);
             termToPosting = (HashMap<String, Posting>) in.readObject();
             in.close();
@@ -32,22 +32,19 @@ public class BooleanRetrieval {
         }
     }
 
-    static public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         System.out.println("maximum amount of memory: " + Runtime.getRuntime().maxMemory() + " bytes");
 
 
-        String XMLFilename = "movies.xml";
-
-
         System.out.println("Starting to parse the XML file...");
-        docIdToContent = SAXDocExtraction.extractDocs(XMLFilename);
+        docIdToContent = SAXDocExtraction.extractDocs(Constants.INPUT_XML_FILENAME);
         System.out.println("Finished parsing the XML file.");
 
 
         System.out.println("Starting to tokenize...");
         for (Map.Entry<String, ArrayList<String>> entry : docIdToContent.entrySet()) {
             System.out.println("Processing movie " + entry.getKey());
-            entry.setValue(TextAnalyzer.tokenizeText(entry.getValue().get(0)));
+            entry.setValue(TextAnalyzer.tokenizeText(entry.getValue().get(0), Constants.STANDARD_ANALYZER));
         }
         System.out.println("Finished tokenizing.");
 
@@ -61,7 +58,7 @@ public class BooleanRetrieval {
         FileOutputStream fos;
         ObjectOutputStream out;
         try {
-            fos = new FileOutputStream("index.ser");
+            fos = new FileOutputStream("boolean_index.ser");
             out = new ObjectOutputStream(fos);
             out.writeObject(termToPosting);
             out.close();
