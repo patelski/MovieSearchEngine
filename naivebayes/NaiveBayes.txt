@@ -1,0 +1,16 @@
+probability that a document d is in class c = p(c|d)
+
+choose the c with maximum p(c|d)
+
+our trainingset is half positive, half negative. This explains the 0.5 constant:
+p(c|d) = log(0.5) + p(d|c)
+
+p(d|c) = log(p(t1|c)) + log(p(t2|c)) + ... + log(p(tn|c))
+where t = term = word/number
+
+p(t1|c) = (1 + (the number of occurences of t1 in c)) divided by (total amount of words in c)
+
+Get list of all unique terms in all reviews
+for each term
+	count the number of occurences in positive class
+	count the number of occurences in negative class
