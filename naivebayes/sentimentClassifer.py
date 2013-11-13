@@ -1,5 +1,6 @@
 import csv
 import math
+import time
 
 reader = csv.reader(open('neg.csv', 'rb'))
 negwords = dict(x for x in reader)
@@ -47,6 +48,7 @@ def classify(review):
 	else:
 		return "positive"
 
+starttime = time.clock()
 correct = 0
 for i in range(500):
 	filepath = "../MovieSearchEngine/sentimentTrainingData/neg/neg (" + str(i+500) + ").txt"
@@ -63,4 +65,6 @@ for i in range(500):
 	if classify(contents) == "positive":
 		correct += 1
 
+endtime = time.clock()
 print float(correct)/float(1000)
+print (endtime-starttime)
