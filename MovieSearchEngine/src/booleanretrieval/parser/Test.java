@@ -14,12 +14,12 @@ import org.antlr.v4.runtime.tree.*;
  */
 public class Test {
 
-    static public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         // read index from file
         BooleanRetrieval.readIndexFromDisk();
         
         // create a CharStream that reads from standard input
-        ANTLRInputStream input = new ANTLRInputStream("(NOT david OR (bretanos AND phoenix)) AND radcliffe");
+        ANTLRInputStream input = new ANTLRInputStream("((20th AND Century) OR (Paramount AND Pictures)) NOT drama ");
 
         // create a lexer that feeds off of input CharStream
         BooleanLexer lexer = new BooleanLexer(input);

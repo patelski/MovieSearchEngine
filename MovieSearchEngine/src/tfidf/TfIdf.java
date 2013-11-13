@@ -12,10 +12,7 @@ import java.util.*;
  *
  * @author flavius
  */
-public class Demo {
-
-    static private HashMap<String, ArrayList<String>> docIdToContent;
-    static private HashMap<String, IndexEntry> termToIndexEntry = new HashMap<String, IndexEntry>();
+public class TfIdf {
 
 //    static private int termFrequency(String term, String docId) {
 //        term = term.trim();
@@ -34,7 +31,6 @@ public class Demo {
 //
 //        return tf;
 //    }
-
 //    static private boolean belongsTo(String term, ArrayList<String> content) {
 //        for (String t : content) {
 //            if (term.equals(t)) {
@@ -44,7 +40,6 @@ public class Demo {
 //
 //        return false;
 //    }
-
 //    static private int documentFrequency(String term) {
 //        term = term.trim();
 //        if ("".equals(term)) {
@@ -61,8 +56,14 @@ public class Demo {
 //
 //        return df;
 //    }
-
-    static private void buildIndex() {
+    public static HashMap<String, IndexEntry> buildIndex(HashMap<String, ArrayList<String>> docIdToContent) {
+        if (docIdToContent == null || docIdToContent.isEmpty()) {
+            return new HashMap<String, IndexEntry>();
+        }
+        
+        
+        System.out.println("Starting to build the index...");
+        HashMap<String, IndexEntry> termToIndexEntry = new HashMap<String, IndexEntry>();
         // for each document in the movie collection
         for (Map.Entry<String, ArrayList<String>> entry : docIdToContent.entrySet()) {
             // for each term in the current document
@@ -80,8 +81,10 @@ public class Demo {
             }
             System.out.println("Processed movie " + entry.getKey());
         }
+        System.out.println("Finished building the index.");
+        return termToIndexEntry;
     }
-    
+
 //    static private void printIndex() {
 //        for (Map.Entry<String, IndexEntry> entry : termToIndexEntry.entrySet()) {
 //            System.out.print("term=" + entry.getKey());
@@ -92,19 +95,25 @@ public class Demo {
 //            }
 //        }
 //    }
-    
-    static private void writeTfIdfToFile() throws Exception {
-        String filename = "tf-idf.csv";
-        BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
+    private static void writeTfIdfToFile(int N, HashMap<String, IndexEntry> termToIndexEntry) throws Exception {
+        if (termToIndexEntry == null || termToIndexEntry.isEmpty()) {
+            System.out.println("Index is null or empty.");
+            return;
+        }
+        
+        
+        System.out.println("Starting to write to file...");
+        
+        
+        BufferedWriter bw = new BufferedWriter(new FileWriter(Constants.OUTPUT_TFIDF_FILENAME));
 //        bw.write("term;docId;tf-idf");
         bw.write("term;docId;tf;df;idf;tf-idf");
         bw.newLine();
-        
-        int docCount = docIdToContent.size();
+
         for (Map.Entry<String, IndexEntry> entry : termToIndexEntry.entrySet()) {
             IndexEntry ie = entry.getValue();
             int df = ie.getDf();
-            double idf = Math.log10(docCount/df);
+            double idf = Math.log10(N / df);
             for (Map.Entry<String, Integer> e : ie.getDocIdToTf().entrySet()) {
                 int tf = e.getValue();
                 StringBuilder builder = new StringBuilder();
@@ -120,37 +129,53 @@ public class Demo {
 
         bw.flush();
         bw.close();
-        
-        System.out.println("File " + filename + " was created.");
+
+        System.out.println("Finished writing to file " + Constants.OUTPUT_TFIDF_FILENAME + ".");
     }
-    
-    static public void main(String[] args) throws Exception {
-        System.out.println("maximum amount of memory: " + Runtime.getRuntime().maxMemory() + " bytes");
-        
-        
-        String XMLFilename = "movies.xml";
-        
-        
-        System.out.println("Starting to parse the XML file...");
-        docIdToContent = SAXDocExtraction.extractDocs(XMLFilename);
-        System.out.println("Finished parsing the XML file.");
+
+    /*public static HashMap<String, IndexEntry> tokenizeAndIndexDocs(HashMap<String, ArrayList<String>> docIdToContent) throws Exception {
+        if (docIdToContent == null || docIdToContent.isEmpty()) {
+            return new HashMap<String, IndexEntry>();
+        }
         
         
         System.out.println("Starting to tokenize...");
         for (Map.Entry<String, ArrayList<String>> entry : docIdToContent.entrySet()) {
             System.out.println("Processing movie " + entry.getKey());
-            entry.setValue(TextAnalyzer.tokenizeText(entry.getValue().get(0)));
+            entry.setValue(TextAnalyzer.tokenizeText(entry.getValue().get(0), Constants.SIMPLE_ANALYZER));
         }
         System.out.println("Finished tokenizing.");
         
         
-        System.out.println("Starting to build the index...");
-        buildIndex();
-        System.out.println("Finished building the index.");
+        return buildIndex(docIdToContent);
+    }*/
+    
+    public static HashMap<String, ArrayList<String>> tokenizeDocs(HashMap<String, ArrayList<String>> docIdToContent, String analyzerType) throws Exception {
+        if (docIdToContent == null || docIdToContent.isEmpty()) {
+            return new HashMap<String, ArrayList<String>>();
+        }
+        
+        System.out.println("Starting to tokenize...");
+        for (Map.Entry<String, ArrayList<String>> entry : docIdToContent.entrySet()) {
+            System.out.println("Processing movie " + entry.getKey());
+            entry.setValue(TextAnalyzer.tokenizeText(entry.getValue().get(0), analyzerType));
+        }
+        System.out.println("Finished tokenizing.");
+        return docIdToContent;
+    }
+    
+    public static void main(String[] args) throws Exception {
+        System.out.println("maximum amount of memory: " + Runtime.getRuntime().maxMemory() + " bytes");
+
+        
+        System.out.println("Starting to parse the XML file...");
+        HashMap<String, ArrayList<String>> docIdToContent = SAXDocExtraction.extractDocs(Constants.INPUT_XML_FILENAME);
+        System.out.println("Finished parsing the XML file.");
         
         
-        System.out.println("Starting to write to file...");
-        writeTfIdfToFile();
-        System.out.println("Finished writing to file.");
+        docIdToContent = tokenizeDocs(docIdToContent, Constants.STANDARD_ANALYZER);
+
+        
+        writeTfIdfToFile(docIdToContent.size(), buildIndex(docIdToContent));
     }
 }
